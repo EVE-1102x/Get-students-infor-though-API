@@ -1,6 +1,6 @@
 import { Column } from "@ant-design/plots";
-import { Button, Form, Input, Table, Select } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Form, Table, Select } from "antd";
+import { useState } from "react";
 import axios from "axios";
 
 function GradeFetcher() {
