@@ -13,8 +13,10 @@
     "@ant-design/plots": "^2.6.1",
     "antd": "^5.26.6",
     "axios": "^1.10.0",
+    "exceljs": "^4.4.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
