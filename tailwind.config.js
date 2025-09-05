@@ -4,13 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "rgba(var(--background))",
-        border: "rgba(var(--border))",
-        grape: "rgba(var(--grape))",
-        white: "rgba(var(--white))",
-        colors: {
-          color: "rgb(var(--color) / <alpha-value>)", // <--- important for dynamic opacity
-        },
+        background: "rgb(var(--background) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        grape: "rgb(var(--grape) / <alpha-value>)",
+        white: "rgb(var(--white) / <alpha-value>)",
+        color: "rgb(var(--color) / <alpha-value>)",
       },
     },
   },

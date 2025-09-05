@@ -19,7 +19,7 @@ const buildSheetLich = (wb, { tenKy, khoi, namHoc }, data = []) => {
   const assetsSheet = wb.getWorksheet("Assets");
 
   if (!ws || !assetsSheet) {
-    console.warn(`❌ Required sheets not found.`);
+    console.warn(`Required sheets not found.`);
     return;
   }
 
@@ -112,10 +112,103 @@ const buildSheetLich = (wb, { tenKy, khoi, namHoc }, data = []) => {
 };
 
 // === Sheet: Theo dõi coi thi ===
-const buildSheetTheoDoiCT = (wb, { tenKy, khoi, namHoc }, data = []) => {
+// const buildSheetTheoDoiCT = (wb, { tenKy, khoi, namHoc }, data = []) => {
+//   const ws = wb.getWorksheet(SHEETS.THEO_DOI_CT);
+//   const assetsSheet = wb.getWorksheet("Assets");
+
+//   // Kiểm tra có lấy đủ sheet cần thiết hay không
+//   if (!ws || !assetsSheet) {
+//     console.warn(
+//       `Required sheets '${SHEETS.THEO_DOI_CT}' and '${assetsSheet}' not found.`
+//     );
+//     return;
+//   }
+
+//   // ==== Cập nhật tiêu đề
+//   ws.getCell(
+//     "A2"
+//   ).value = `BẢNG THEO DÕI GIÁO VIÊN TRÔNG KIỂM TRA VÀ TRỰC ĐỀ KIỂM TRA ${tenKy}-KHỐI ${khoi}-NĂM HỌC ${namHoc}`;
+//   ws.getCell("A2").alignment = { horizontal: "center" };
+
+//   const START_ROW = 6;
+//   const HEADER_ROW_INDEX = 4;
+//   const CA_START_COL = 4; // ví dụ ô D là cột 4
+
+//   // === 1. Tìm số lượng ca nhiều nhất trong toàn bộ data
+//   const maxCaCount = Math.max(
+//     ...data.map(
+//       (item) =>
+//         ["ca_1", "ca_2", "ca_3", "ca_4"].filter(
+//           (key) => item[key] !== undefined
+//         ).length
+//     )
+//   );
+
+//   // === 2. Cần chèn thêm (maxCaCount - 1) cột sau cột CA gốc
+//   const columnsToInsert = maxCaCount > 1 ? maxCaCount - 1 : 0;
+
+//   if (columnsToInsert > 0) {
+//     // Chèn cột mới sau cột CA gốc (tức sau cột 4)
+//     ws.spliceColumns(CA_START_COL + 1, 0, ...Array(columnsToInsert).fill([]));
+//   }
+
+//   // === 3. Ghi tên các cột ca (CA 1 → CA n) bắt đầu từ cột D
+//   const headerRow = ws.getRow(HEADER_ROW_INDEX);
+//   for (let i = 0; i < maxCaCount; i++) {
+//     const cell = headerRow.getCell(CA_START_COL + i);
+//     cell.value = `CA ${i + 1}`;
+//     cell.alignment = { vertical: "middle", horizontal: "center" };
+//   }
+//   headerRow.commit();
+
+//   // === 4. Ghi dữ liệu
+//   let currentRow = START_ROW;
+
+//   data.forEach((item, index) => {
+//     const row = ws.getRow(currentRow++);
+
+//     // Cột A, B, C: STT, họ tên, môn
+//     row.getCell(1).value = index + 1;
+//     row.getCell(2).value = item.hoTen || "";
+//     row.getCell(3).value = item.monGiangDay || "";
+
+//     // Ghi dữ liệu ca từ cột D
+//     for (let i = 0; i < maxCaCount; i++) {
+//       const caValue = item[`ca_${i + 1}`] || "";
+//       row.getCell(CA_START_COL + i).value = caValue;
+//     }
+
+//     // Ghi các trường còn lại sau cột ca
+//     let nextCol = CA_START_COL + maxCaCount;
+//     row.getCell(nextCol++).value = item.tong_60 || "";
+//     row.getCell(nextCol++).value = item.tong_90 || "";
+//     row.getCell(nextCol++).value = item.tong_120 || "";
+//     row.getCell(nextCol++).value = item.ghiChu || "";
+
+//     // Căn giữa
+//     row.eachCell({ includeEmpty: false }, (cell) => {
+//       cell.alignment = { vertical: "middle", horizontal: "center" };
+//     });
+
+//     row.commit();
+//   });
+// };
+
+const buildSheetTheoDoiCT = (
+  wb,
+  { tenKy, khoi, namHoc },
+  data = [],
+  column
+) => {
   const ws = wb.getWorksheet(SHEETS.THEO_DOI_CT);
   const assetsSheet = wb.getWorksheet("Assets");
 
+  console.log(
+    "Thông tin column nhận được tại buildSheetTheoDoiCT: ",
+    column[3]?.children
+  );
+
+  // Kiểm tra có lấy đủ sheet cần thiết hay không
   if (!ws || !assetsSheet) {
     console.warn(
       `Required sheets '${SHEETS.THEO_DOI_CT}' and '${assetsSheet}' not found.`
@@ -127,70 +220,57 @@ const buildSheetTheoDoiCT = (wb, { tenKy, khoi, namHoc }, data = []) => {
   ws.getCell(
     "A2"
   ).value = `BẢNG THEO DÕI GIÁO VIÊN TRÔNG KIỂM TRA VÀ TRỰC ĐỀ KIỂM TRA ${tenKy}-KHỐI ${khoi}-NĂM HỌC ${namHoc}`;
-  ws.getCell("A2").alignment = { horizontal: "center" };
+  ws.getCell("A2").alignment = { horizontal: "center", vertical: "middle" };
 
   const START_ROW = 6;
   const HEADER_ROW_INDEX = 4;
-  const CA_START_COL = 4; // ví dụ ô D là cột 4
 
-  // === 1. Tìm số lượng ca nhiều nhất trong toàn bộ data
-  const maxCaCount = Math.max(
-    ...data.map(
-      (item) =>
-        ["ca_1", "ca_2", "ca_3", "ca_4"].filter(
-          (key) => item[key] !== undefined
-        ).length
-    )
-  );
+  const columnsPerDay = [2, 3, 1]; // Mỗi phần tử tương ứng số cột cần cho 1 ngày
+  const startCol = 4; // ví dụ bắt đầu từ cột D
+  let currentCol = startCol;
 
-  // === 2. Cần chèn thêm (maxCaCount - 1) cột sau cột CA gốc
-  const columnsToInsert = maxCaCount > 1 ? maxCaCount - 1 : 0;
-
-  if (columnsToInsert > 0) {
-    // Chèn cột mới sau cột CA gốc (tức sau cột 4)
-    ws.spliceColumns(CA_START_COL + 1, 0, ...Array(columnsToInsert).fill([]));
-  }
-
-  // === 3. Ghi tên các cột ca (CA 1 → CA n) bắt đầu từ cột D
+  // Dòng header để ghi tên các ngày
   const headerRow = ws.getRow(HEADER_ROW_INDEX);
-  for (let i = 0; i < maxCaCount; i++) {
-    const cell = headerRow.getCell(CA_START_COL + i);
-    cell.value = `CA ${i + 1}`;
-    cell.alignment = { vertical: "middle", horizontal: "center" };
-  }
-  headerRow.commit();
 
-  // === 4. Ghi dữ liệu
-  let currentRow = START_ROW;
+  // Dòng sub-header để ghi tên ca (CA 1, CA 2,...)
+  const subHeaderRow = ws.getRow(HEADER_ROW_INDEX + 1);
 
-  data.forEach((item, index) => {
-    const row = ws.getRow(currentRow++);
+  const CotTinh = 4;
+  const CotDong = column[3]?.children.length - CotTinh; // Tổng cột động
+  let childIndex = 0; // Chỉ số để đọc từ column[3].children
 
-    // Cột A, B, C: STT, họ tên, môn
-    row.getCell(1).value = index + 1;
-    row.getCell(2).value = item.hoTen || "";
-    row.getCell(3).value = item.monGiangDay || "";
+  columnsPerDay.forEach((colCount) => {
+    // Merge ô trên cùng cho ngày
+    ws.mergeCells(
+      HEADER_ROW_INDEX,
+      currentCol,
+      HEADER_ROW_INDEX,
+      currentCol + colCount - 1
+    );
 
-    // Ghi dữ liệu ca từ cột D
-    for (let i = 0; i < maxCaCount; i++) {
-      const caValue = item[`ca_${i + 1}`] || "";
-      row.getCell(CA_START_COL + i).value = caValue;
+    // Gán tên ngày vào ô đầu tiên của vùng merge
+    const child = column[3].children[childIndex];
+    console.log("Thông tin title gửi đi: ", child?.title);
+    headerRow.getCell(currentCol).value = child?.title || "";
+    headerRow.getCell(currentCol).alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+
+    // Ghi các cột con bên dưới (CA 1, CA 2, ...)
+    for (let i = 0; i < colCount; i++) {
+      const cell = subHeaderRow.getCell(currentCol + i);
+      cell.value = `CA ${i + 1}`;
+      cell.alignment = { horizontal: "center", vertical: "middle" };
     }
 
-    // Ghi các trường còn lại sau cột ca
-    let nextCol = CA_START_COL + maxCaCount;
-    row.getCell(nextCol++).value = item.tong_60 || "";
-    row.getCell(nextCol++).value = item.tong_90 || "";
-    row.getCell(nextCol++).value = item.tong_120 || "";
-    row.getCell(nextCol++).value = item.ghiChu || "";
-
-    // Căn giữa
-    row.eachCell({ includeEmpty: false }, (cell) => {
-      cell.alignment = { vertical: "middle", horizontal: "center" };
-    });
-
-    row.commit();
+    // Cập nhật chỉ số đọc children và cột hiện tại
+    childIndex++;
+    currentCol += colCount;
   });
+
+  headerRow.commit();
+  subHeaderRow.commit();
 };
 
 // === Sheet: Theo dõi chấm bài ===
@@ -316,7 +396,6 @@ const ExportExcel = async ({
     const rawDate = dsHocSinh?.[0]?.a_ngay_sinh || "";
     const year = rawDate.split("-")[0] || new Date().getFullYear();
     const namHoc = `${year}-${+year + 1}`;
-
     const headerInfo = { tenKy, khoi, namHoc };
 
     buildSheetLich(
@@ -328,7 +407,7 @@ const ExportExcel = async ({
       wb,
       headerInfo,
       Array.isArray(theoDoiCT.data) ? theoDoiCT.data : [],
-      theoDoiCT.column
+      theoDoiCT.columns
     );
     buildSheetChamBai(
       wb,

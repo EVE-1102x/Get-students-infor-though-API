@@ -1,0 +1,50 @@
+/* Scrollbar */
+.custom-table-scroll .ant-table-body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.custom-table-scroll .ant-table-body::-webkit-scrollbar-track {
+  background: #f4f4f5;
+  border-radius: 4px;
+}
+.custom-table-scroll .ant-table-body::-webkit-scrollbar-thumb {
+  background: #a1a1aa;
+  border-radius: 4px;
+}
+.custom-table-scroll .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #71717a;
+}
+
+/* Tăng border giữa các hàng */
+.custom-table-scroll .ant-table-tbody > tr > td {
+  border: 1.25px solid #cbd5e1 !important;
+  border-top: none !important; /* loại bỏ đường kẻ trên */
+}
+
+/* Màu chung cho Buổi + Tiết */
+.ant-table-cell.col-buoi-tiet {
+  background-color: #e2e8f0 !important; /* xám xanh */
+  font-weight: 600;
+}
+
+/* Màu riêng cho từng thứ */
+.ant-table-cell.col-thu2 {
+  background-color: #fef3c7 !important; /* vàng */
+}
+.ant-table-cell.col-thu3 {
+  background-color: #bae6fd !important; /* xanh dương */
+}
+.ant-table-cell.col-thu4 {
+  background-color: #fbcfe8 !important; /* hồng */
+}
+.ant-table-cell.col-thu5 {
+  background-color: #bbf7d0 !important; /* xanh lá */
+}
+.ant-table-cell.col-thu6 {
+  background-color: #ddd6fe !important; /* tím */
+}
+
+/* Border dưới cùng của mỗi ngày */
+.row-last-of-day td {
+  border-bottom: 2px solid #334155;
+}
